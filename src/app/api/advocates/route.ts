@@ -36,5 +36,17 @@ export function GET(req: NextRequest) {
     })
   }
 
+  const page = parseInt(req.nextUrl.searchParams.get("page") ?? "")
+  const pageSize = parseInt(req.nextUrl.searchParams.get("pageSize") ?? "")
+
+  if (isNaN(page) || isNaN(pageSize)) {
+    throw new Error("Invalid or missing pagination arguments")
+  }
+
+  const begin = page * pageSize
+  const end = begin + pageSize
+
+  data = data.slice(begin, end)
+
   return Response.json({ data });
 }

@@ -7,6 +7,9 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState<string | null>(null);
   const [advocates, setAdvocates] = useState<Advocate[]>([]);
 
+  const [page, setPage] = useState<number>(0);
+  const PAGE_SIZE = 4
+
   useEffect(() => {
     /*
      * Whenever the search term changes, fetch new results
@@ -22,13 +25,16 @@ export default function Home() {
 
     let url = "/api/advocates"
 
-    if (searchTerm) {
-      const params = new URLSearchParams({
-        term: searchTerm
-      })
+    const params = new URLSearchParams({
+      page: page.toString(),
+      pageSize: PAGE_SIZE.toString()
+    })
 
-      url = `${url}?${params.toString()}`
+    if (searchTerm) {
+      params.append("term", searchTerm)
     }
+
+    url = `${url}?${params.toString()}`
 
     console.log("fetching advocates...", { url });
     fetch(url).then((response) => {
@@ -37,7 +43,7 @@ export default function Home() {
       });
     });
 
-  }, [searchTerm]);
+  }, [searchTerm, page]);
 
   /*
    * The type of this handler is interesting - because it serves as the handler for change and focus events on our input element,
@@ -47,7 +53,6 @@ export default function Home() {
   const assignSearchTermToCurrentValue = (e: ChangeEvent<HTMLInputElement> & FocusEvent<HTMLInputElement, Element>) => {
     setSearchTerm(e.target.value)
   }
-
 
   return (
     <main style={{ margin: "24px" }}>
@@ -72,6 +77,11 @@ export default function Home() {
       </div>
       <br />
       <br />
+      <div>
+        <button onClick={() => setPage(page + 1)}>+</button>
+        <p>Page: {page}</p>
+        <button onClick={() => setPage(page - 1)}>-</button>
+      </div>
       <table>
         <thead>
           <tr>
