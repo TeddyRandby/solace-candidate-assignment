@@ -78,9 +78,9 @@ export default function Home() {
       <br />
       <br />
       <div>
-        <button onClick={() => setPage(page + 1)}>+</button>
+        <button disabled={advocates.length < PAGE_SIZE} onClick={() => setPage(page + 1)}>+</button>
         <p>Page: {page}</p>
-        <button onClick={() => setPage(page - 1)}>-</button>
+        <button disabled={page == 0} onClick={() => setPage(page - 1)}>-</button>
       </div>
       <table>
         <thead>
