@@ -39,6 +39,7 @@ const randomSpecialty = () => {
 
 const advocateData = [
   {
+    id: 1,
     firstName: "John",
     lastName: "Doe",
     city: "New York",
@@ -48,6 +49,7 @@ const advocateData = [
     phoneNumber: 5551234567,
   },
   {
+    id: 2,
     firstName: "Jane",
     lastName: "Smith",
     city: "Los Angeles",
@@ -57,6 +59,7 @@ const advocateData = [
     phoneNumber: 5559876543,
   },
   {
+    id: 3,
     firstName: "Alice",
     lastName: "Johnson",
     city: "Chicago",
@@ -66,6 +69,7 @@ const advocateData = [
     phoneNumber: 5554567890,
   },
   {
+    id: 4,
     firstName: "Michael",
     lastName: "Brown",
     city: "Houston",
@@ -75,6 +79,7 @@ const advocateData = [
     phoneNumber: 5556543210,
   },
   {
+    id: 5,
     firstName: "Emily",
     lastName: "Davis",
     city: "Phoenix",
@@ -84,6 +89,7 @@ const advocateData = [
     phoneNumber: 5553210987,
   },
   {
+    id: 6,
     firstName: "Chris",
     lastName: "Martinez",
     city: "Philadelphia",
@@ -93,6 +99,7 @@ const advocateData = [
     phoneNumber: 5557890123,
   },
   {
+    id: 7,
     firstName: "Jessica",
     lastName: "Taylor",
     city: "San Antonio",
@@ -102,6 +109,7 @@ const advocateData = [
     phoneNumber: 5554561234,
   },
   {
+    id: 8,
     firstName: "David",
     lastName: "Harris",
     city: "San Diego",
@@ -111,6 +119,7 @@ const advocateData = [
     phoneNumber: 5557896543,
   },
   {
+    id: 9,
     firstName: "Laura",
     lastName: "Clark",
     city: "Dallas",
@@ -120,6 +129,7 @@ const advocateData = [
     phoneNumber: 5550123456,
   },
   {
+    id: 10,
     firstName: "Daniel",
     lastName: "Lewis",
     city: "San Jose",
@@ -129,6 +139,7 @@ const advocateData = [
     phoneNumber: 5553217654,
   },
   {
+    id: 11,
     firstName: "Sarah",
     lastName: "Lee",
     city: "Austin",
@@ -138,6 +149,7 @@ const advocateData = [
     phoneNumber: 5551238765,
   },
   {
+    id: 12,
     firstName: "James",
     lastName: "King",
     city: "Jacksonville",
@@ -147,6 +159,7 @@ const advocateData = [
     phoneNumber: 5556540987,
   },
   {
+    id: 13,
     firstName: "Megan",
     lastName: "Green",
     city: "San Francisco",
@@ -156,6 +169,7 @@ const advocateData = [
     phoneNumber: 5559873456,
   },
   {
+    id: 14,
     firstName: "Joshua",
     lastName: "Walker",
     city: "Columbus",
@@ -165,6 +179,7 @@ const advocateData = [
     phoneNumber: 5556781234,
   },
   {
+    id: 15,
     firstName: "Amanda",
     lastName: "Hall",
     city: "Fort Worth",
