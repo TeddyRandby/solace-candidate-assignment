@@ -56,5 +56,7 @@ export function GET(req: NextRequest) {
 
   data = data.slice(begin, end)
 
-  return Response.json({ data });
+  const hasMore = page < maxPage
+
+  return Response.json({ data: { advocates: data, more: hasMore } });
 }
