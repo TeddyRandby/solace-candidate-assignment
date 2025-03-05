@@ -43,7 +43,7 @@ export function GET(req: NextRequest) {
     throw new Error("Invalid or missing pagination arguments")
   }
 
-  const maxPage = data.length % pageSize;
+  const maxPage = Math.floor(data.length / pageSize);
 
   // Clamp the page to a minimum of zero
   page = Math.max(page, 0)
@@ -57,6 +57,8 @@ export function GET(req: NextRequest) {
   data = data.slice(begin, end)
 
   const hasMore = page < maxPage
+
+  console.log({ page, pageSize, begin, end, hasMore, maxPage, items: data.length })
 
   return Response.json({ data: { advocates: data, more: hasMore } });
 }

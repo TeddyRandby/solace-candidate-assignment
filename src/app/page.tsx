@@ -1,6 +1,6 @@
 "use client";
 
-import { ChangeEvent, ChangeEventHandler, FocusEvent, FocusEventHandler, useEffect, useState } from "react";
+import { ChangeEvent, FocusEvent, MouseEvent, useEffect, useState } from "react";
 import { Advocate } from "./api/advocates/route";
 
 export default function Home() {
@@ -58,35 +58,33 @@ export default function Home() {
     setPage(0)
   }
 
+  const resetSearchTerm = (e: MouseEvent<HTMLButtonElement>) => {
+    setSearchTerm(null)
+    setPage(0)
+  }
+
+
   return (
     <main style={{ margin: "24px" }}>
       <h1>Solace Advocates</h1>
       <br />
       <br />
       <div className="flex">
-        { /*
-           * For event handlers as small as this, I prefer keeping the logic in-line in the markup. It reads nicely as someone is looking over the code:
-           *
-           * "Ah a button. What does it do? On click ... set search term to 'null'. It clears out the search term!"
-           */ }
-        <button onClick={() => setSearchTerm(null)}>
-          <svg className="w-6 h-6 text-gray-800" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18 17.94 6M18 18 6.06 6" />
+        <button className="group bg-gray-100 px-4 border border-gray-300 rounded-l-lg" onClick={resetSearchTerm}>
+          <svg className="w-6 h-6 text-gray-500 group-hover:font-bold  group-hover:text-gray-800 transition-all" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+            <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18 17.94 6M18 18 6.06 6" />
           </svg>
 
         </button>
-        { /*
-           * For event handlers that reuse behavior, I like to pull them out into specifically named variables.
-           */ }
-        <input className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" onFocus={assignSearchTermToCurrentValue} onChange={assignSearchTermToCurrentValue} />
+        <input className="bg-gray-100 border-l-0 border border-gray-300 rounded-r-lg text-gray-900 text-sm focus:ring-blue-200 focus:border-blue-200 block w-full p-2.5" onFocus={assignSearchTermToCurrentValue} onChange={assignSearchTermToCurrentValue} value={searchTerm ?? ""} />
       </div>
       <br />
       <br />
-      <div className="flex items-center">
+      <div className="flex items-center ">
         <div className="grow" />
-        <button className="px-2 text-white bg-gray-400 enabled:hover:bg-gray-700 rounded-l-lg border-solid" disabled={page == 0} onClick={() => setPage(page - 1)}>-</button>
+        <button className="px-2 text-white bg-gray-400 enabled:hover:bg-gray-700 rounded-l-lg border-solid enabled:hover:shadow-lg" disabled={page == 0} onClick={() => setPage(page - 1)}>-</button>
         <p className="px-4 text-white bg-gray-400">{page + 1}</p>
-        <button className="px-2 text-white bg-gray-400 enabled:hover:bg-gray-700 rounded-r-lg border-solid" disabled={!hasMore} onClick={() => setPage(page + 1)}>+</button>
+        <button className="px-2 text-white bg-gray-400 enabled:hover:bg-gray-700 rounded-r-lg border-solid enabled:hover:shadow-lg" disabled={!hasMore} onClick={() => setPage(page + 1)}>+</button>
         <div className="grow" />
       </div>
       <table className="w-full table-fixed text-sm">
