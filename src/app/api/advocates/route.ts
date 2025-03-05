@@ -36,5 +36,29 @@ export function GET(req: NextRequest) {
     })
   }
 
-  return Response.json({ data });
+  let page = parseInt(req.nextUrl.searchParams.get("page") ?? "")
+  const pageSize = parseInt(req.nextUrl.searchParams.get("pageSize") ?? "")
+
+  if (isNaN(page) || isNaN(pageSize)) {
+    throw new Error("Invalid or missing pagination arguments")
+  }
+
+  const maxPage = Math.floor(data.length / pageSize);
+
+  // Clamp the page to a minimum of zero
+  page = Math.max(page, 0)
+  // Clamp the page to a maximum of max page
+  page = Math.min(page, maxPage)
+
+  const begin = page * pageSize
+  const end = begin + pageSize
+
+
+  data = data.slice(begin, end)
+
+  const hasMore = page < maxPage
+
+  console.log({ page, pageSize, begin, end, hasMore, maxPage, items: data.length })
+
+  return Response.json({ data: { advocates: data, more: hasMore } });
 }
