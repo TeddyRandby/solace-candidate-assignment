@@ -1,3 +1,4 @@
+import { count as countRows, ilike, or, sql } from "drizzle-orm";
 import db from "../../../db";
 import { advocates } from "../../../db/schema";
 import { advocateData } from "../../../db/seed/advocates";
@@ -5,36 +6,67 @@ import { NextRequest } from "next/server";
 
 export type Advocate = typeof advocateData[0]
 
-export function GET(req: NextRequest) {
-  const term = req.nextUrl.searchParams.get("term")
-  // Uncomment this line to use a database
-  // const data = await db.select().from(advocates);
+async function doquery(term: string | null, page = 0, pageSize = 100) {
+  const select = {
+    firstName: advocates.firstName,
+    lastName: advocates.lastName,
+    city: advocates.city,
+    degree: advocates.degree,
+    specialties: advocates.specialties,
+    yearsOfExperience: advocates.yearsOfExperience,
+    phoneNumber: advocates.phoneNumber,
+  }
 
-  let data = advocateData;
-  console.log(term)
+  /*
+   * A potential optimization would be to perform the count and data queries in a single query instead of two.
+   * This is possible with writing some custom sql, and maybe with drizzle, but I couldn't figure it out
+   * quickly from reading the docs. This solution is simpler, and more than fast enough for now.
+   */
 
   if (term) {
-    /*
-     * This seems like the cleanest way to perform case-insensitive
-     * search in javascript (aside from converting everything to lower-case first).
-     * A regex is compiled once, and matching is relatively fast. Converting
-     * all strings and search terms to lowercase can be significant overhead.
-     * 
-     * If there was actually a database layer, the case-insensitive portion
-     * could be handled at that level (and that would be way better)
-     */
-    const caseInsensitiveMatch = new RegExp(term, "i")
+    // If we have a search term, perform a case-insenstive search across the text fields
+    term = `%${term}%`
+    const where = or(
+      ilike(advocates.firstName, term),
+      ilike(advocates.lastName, term),
+      ilike(advocates.city, term),
+      ilike(advocates.degree, term),
+      sql`${advocates.specialties}::text ilike ${term}` // Cast the jsonb column 'specialties' to text, and search that.
+    )
 
-    data = data.filter((advocate) => {
-      return (
-        advocate.firstName.match(caseInsensitiveMatch) ||
-        advocate.lastName.match(caseInsensitiveMatch) ||
-        advocate.city.match(caseInsensitiveMatch) ||
-        advocate.degree.match(caseInsensitiveMatch) ||
-        advocate.specialties.some((specialty) => specialty.match(caseInsensitiveMatch))
-      );
-    })
+    // Since these queries are not reliant on each other, we can perform them in parallel with Promise.all
+    const [[{ count }], data] = await Promise.all([
+      db
+        .select({ count: countRows() })
+        .from(advocates)
+        .where(where),
+      db
+        .select(select)
+        .from(advocates)
+        .where(where)
+        .offset(page * pageSize)
+        .limit(pageSize),
+    ])
+
+    return { count, data }
   }
+
+  const [[{ count }], data] = await Promise.all([
+    db
+      .select({ count: countRows() })
+      .from(advocates),
+    db
+      .select(select)
+      .from(advocates)
+      .offset(page * pageSize)
+      .limit(pageSize)
+  ])
+
+  return { count, data }
+}
+
+export async function GET(req: NextRequest) {
+  const term = req.nextUrl.searchParams.get("term")
 
   let page = parseInt(req.nextUrl.searchParams.get("page") ?? "")
   const pageSize = parseInt(req.nextUrl.searchParams.get("pageSize") ?? "")
@@ -43,22 +75,14 @@ export function GET(req: NextRequest) {
     throw new Error("Invalid or missing pagination arguments")
   }
 
-  const maxPage = Math.floor(data.length / pageSize);
-
   // Clamp the page to a minimum of zero
   page = Math.max(page, 0)
-  // Clamp the page to a maximum of max page
-  page = Math.min(page, maxPage)
 
-  const begin = page * pageSize
-  const end = begin + pageSize
+  let { count, data } = await doquery(term, page, pageSize)
 
-
-  data = data.slice(begin, end)
+  const maxPage = Math.floor(count / pageSize)
 
   const hasMore = page < maxPage
-
-  console.log({ page, pageSize, begin, end, hasMore, maxPage, items: data.length })
 
   return Response.json({ data: { advocates: data, more: hasMore } });
 }
